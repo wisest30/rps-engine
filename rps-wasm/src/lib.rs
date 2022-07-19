@@ -1,5 +1,6 @@
 mod utils;
 
+use rps_core;
 use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -9,20 +10,24 @@ use wasm_bindgen::prelude::*;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
-extern "C" {
-    fn alert(s: &str);
+struct Game {
+    game: rps_core::Game,
 }
 
 #[wasm_bindgen]
-pub fn greet() {
-    alert(&rps_core::test_str());
-}
+impl Game {
+    pub fn new() -> Self {
+        Game {
+            game: rps_core::Game::new(),
+        }
+    }
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let test = rps_core::test_str();
-        assert_eq!(test, "testtest".to_string());
+    pub fn make_score_board(&self) -> String {
+        self.game.make_score_board()
+    }
+
+    pub fn play_game(&mut self, choice: u8) {
+        let choice = rps_core::u8_to_choice(choice);
+        self.game.play(choice);
     }
 }
